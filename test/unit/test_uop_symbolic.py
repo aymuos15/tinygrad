@@ -6,7 +6,7 @@ from tinygrad.dtype import dtypes, ConstType, DType, Invalid
 from tinygrad.helpers import Context
 from test.helpers import get_uops
 from tinygrad.uop.ops import UOp, Ops, graph_rewrite, sym_infer
-from tinygrad.uop.symbolic import sym, commutative, pm_simplify_valid
+from tinygrad.uop.symbolic import sym, commutative, pm_simplify_valid, simplify_pow
 from tinygrad.uop.validate import uops_to_z3
 
 def check_uop_against_string(self, v:UOp, s:str):
@@ -797,6 +797,9 @@ class TestSymbolic(unittest.TestCase):
     b = Variable("b", 1, 10, dtypes.int)
     self.assertIn((a.cast(dtypes.long)+b.cast(dtypes.long)).render(), "(long)((a+b))")
     self.assertIn((a.cast(dtypes.long)*b.cast(dtypes.long)).render(), "(long)((a*b))")
+
+  def test_simplify_pow_negative_base(self):
+    assert simplify_pow(UOp.variable("x", -10.0, -1.0, dtypes.float), UOp.const(dtypes.float, 1.5)) is None
 
 class TestSymbolicNumeric(unittest.TestCase):
   def helper_test_numeric(self, f):

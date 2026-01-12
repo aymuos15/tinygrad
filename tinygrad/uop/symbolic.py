@@ -12,7 +12,7 @@ from tinygrad.uop.divandmod import div_and_mod_symbolic
 def simplify_pow(x:UOp, c:UOp) -> UOp|None:
   if c.arg < 0: return x.reciprocal().pow(-c)
   if c.arg == 0: return x.const_like(1)
-  if int(c.arg-0.5)+0.5 == c.arg: return x.pow(c.const_like(c.arg-0.5)) * x.sqrt()
+  if int(c.arg-0.5)+0.5 == c.arg and x.vmin >= 0: return x.pow(c.const_like(c.arg-0.5)) * x.sqrt()
   if int(c.arg) == c.arg: return (y := x.pow(c.const_like(c.arg//2))) * y * (x if c.arg%2 == 1 else 1)
   return None
 
